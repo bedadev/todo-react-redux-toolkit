@@ -14,9 +14,13 @@ export const todoApiSlice = createApi({
   }),
   tagTypes: ['Todos'],
   endpoints: (builder) => ({
-    getTodos: builder.query<Todo[], number | void>({
-      query: (limit = 10, page = 1) => {
-        return `?_sort=id&_order=desc&_limit=${limit}&_page=${page}`
+    getTodos: builder.query<Todo[], { limit?: number, page?: number, filter?: boolean }>({
+      query: ({ limit = 10, page = 1, filter }) => {
+        let query = `?_sort=id&_order=desc&_limit=${limit}&_page=${page}`
+        if (filter !== undefined) {
+          query += `&completed=${filter}`
+        }
+        return query
       },
       transformResponse: (res: Todo[]) => res.sort((a, b) => b.id - a.id),
       providesTags: ['Todos']
